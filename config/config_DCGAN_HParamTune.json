@@ -1,0 +1,69 @@
+{
+  "name": "BCC_Hparam",
+  "run_name": "_Glr_0.0002+Dlr_0.001+Gngf_64+Dndf_64+NZ_100",
+  "n_gpu": 2,
+  "arch_G": {
+    "type": "Generator_DCGAN",
+    "args": {
+      "nz": 100,
+      "ngf": 32,
+      "G_kernel_size": 4
+    }
+  },
+  "arch_D": {
+    "type": "Discriminator_DCGAN",
+    "args": {
+      "ndf": 64,
+      "D_kernel_size": 4
+    }
+  },
+  "hyperparameter_Tuning": true,
+  "data_loader": {
+    "type": "KNUskinDataLoader_GAN",
+    "args": {
+      "data_dir": "data/",
+      "batch_size": 64,
+      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
+      "cell_type": "BCC",
+      "shuffle": false,
+      "validation_split": 0.1,
+      "num_workers": 2
+    }
+  },
+  "optimizer_G": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.0001,
+      "weight_decay": 0,
+      "amsgrad": false
+    }
+  },
+  "optimizer_D": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.0001,
+      "weight_decay": 0,
+      "amsgrad": false
+    }
+  },
+  "loss": "BCELoss",
+  "metrics": [],
+  "lr_scheduler": {
+    "type": "StepLR",
+    "args": {
+      "step_size": 50,
+      "gamma": 0.1
+    }
+  },
+  "trainer": {
+    "model_name" : "DCGAN",
+    "epochs": 4000,
+    "save_dir": "saved/",
+    "save_period": 100,
+    "verbosity": 2,
+    "monitor": "off",
+    "early_stop": 10,
+    "tensorboard": true,
+    "nz": 100
+  }
+}

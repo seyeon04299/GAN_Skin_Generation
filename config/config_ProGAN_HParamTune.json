@@ -1,0 +1,142 @@
+{
+  "name": "ProGAN_BCC",
+  "run_name": "_ProGAN_BCC+Glr_0.001+Dlr_0.001+Gngf_512+Dndf_512+NZ_100",
+  "n_gpu": 2,
+  "arch_G": {
+    "type": "Generator_ProGAN",
+    "args": {
+      "nz": 100,
+      "ngf": 512,
+      "img_channels": 3,
+      "factors": [
+        1,
+        1,
+        1,
+        1,
+        0.5,
+        0.25,
+        0.125
+      ]
+    }
+  },
+  "arch_D": {
+    "type": "Discriminator_ProGAN",
+    "args": {
+      "ndf": 512,
+      "factors": [
+        1,
+        1,
+        1,
+        1,
+        0.5,
+        0.25,
+        0.125
+      ]
+    }
+  },
+  "hyperparameter_Tuning": true,
+  "data_loader": {
+    "type": "KNUskinDataLoader_ProGAN",
+    "args": {
+      "data_dir": "data/",
+      "batch_size": 64,
+      "input_size": 224,
+      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
+      "cell_type": "BCC",
+      "shuffle": true,
+      "validation_split": 0,
+      "num_workers": 2
+    }
+  },
+  "optimizer_G": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.001,
+      "betas": [
+        0,
+        0.99
+      ]
+    }
+  },
+  "optimizer_D": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.001,
+      "betas": [
+        0,
+        0.99
+      ]
+    }
+  },
+  "metrics": [],
+  "lr_scheduler": {
+    "type": "StepLR",
+    "args": {
+      "step_size": 50,
+      "gamma": 0.1
+    }
+  },
+  "trainer": {
+    "model_name": "ProGAN",
+    "epochs": 1350,
+    "save_dir": "saved/",
+    "save_period": 100,
+    "verbosity": 2,
+    "monitor": "off",
+    "early_stop": 10,
+    "tensorboard": true,
+    "nz": 100,
+    "lambda_GP": 10,
+    "step": 0,
+    "progressive_epochs_later": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+    ],
+    "progressive_epochs": [
+      300,
+      300,
+      300,
+      400,
+      550,
+      650,
+      650
+    ],
+    "img_sizes_later": [
+      4,
+      7,
+      14,
+      28,
+      56,
+      112,
+      224,
+      448,
+      896
+    ],
+    "img_sizes": [
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "batch_sizes": [
+      64,
+      64,
+      32,
+      32,
+      16,
+      8,
+      8
+    ],
+    "use_autocast": true
+  }
+}
