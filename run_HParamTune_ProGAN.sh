@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # ------------------ Set hyperparameter tuning permutation options-----------------------------------
-OPTIMIZER_G=("0.001" "0.0005")
-OPTIMIZER_D=("0.001")
-NGF=("512")
-NDF=("512")
-CELL_TYPE=("BCC")
+OPTIMIZER_G=("0.0001")
+OPTIMIZER_D=("0.0001")
+NGF=("1024")
+NDF=("1024")
+CELL_TYPE=("MEL")
 #CELL_TYPE=("BCC" "SCC" "Benign" "Melanoma")
 NZ=("100") 
 # "200")

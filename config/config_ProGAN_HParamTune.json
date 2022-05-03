@@ -1,6 +1,6 @@
 {
-  "name": "ProGAN_BCC",
-  "run_name": "_ProGAN_BCC+Glr_0.001+Dlr_0.001+Gngf_512+Dndf_512+NZ_100",
+  "name": "ProGAN_MEL",
+  "run_name": "_ProGAN_MEL+Glr_0.0001+Dlr_0.0001+Gngf_1024+Dndf_1024+NZ_100",
   "n_gpu": 2,
   "arch_G": {
     "type": "Generator_ProGAN",
@@ -28,8 +28,8 @@
         1,
         1,
         1,
+        1,
         0.5,
-        0.25,
         0.125
       ]
     }
@@ -41,8 +41,8 @@
       "data_dir": "data/",
       "batch_size": 64,
       "input_size": 224,
-      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
-      "cell_type": "BCC",
+      "subject_map": "data/ISIC2017/ISIC_2017_subjectmap.csv",
+      "cell_type": "MEL",
       "shuffle": true,
       "validation_split": 0,
       "num_workers": 2
@@ -51,7 +51,7 @@
   "optimizer_G": {
     "type": "Adam",
     "args": {
-      "lr": 0.001,
+      "lr": 0.0001,
       "betas": [
         0,
         0.99
@@ -61,7 +61,7 @@
   "optimizer_D": {
     "type": "Adam",
     "args": {
-      "lr": 0.001,
+      "lr": 0.0001,
       "betas": [
         0,
         0.99
@@ -100,13 +100,13 @@
       150
     ],
     "progressive_epochs": [
-      300,
-      300,
-      300,
-      400,
-      550,
-      650,
-      650
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50
     ],
     "img_sizes_later": [
       4,
@@ -129,13 +129,13 @@
       256
     ],
     "batch_sizes": [
-      64,
-      64,
       32,
       32,
       16,
+      16,
       8,
-      8
+      8,
+      6
     ],
     "use_autocast": true
   }

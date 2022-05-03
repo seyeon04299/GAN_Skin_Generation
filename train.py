@@ -9,8 +9,9 @@ import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch
 import model.model_ProGAN as module_arch_ProGAN
+import model.model_UNCGAN as module_arch_UNCGAN
 from parse_config import ConfigParser
-from trainer import Trainer, Trainer_WGAN, Trainer_ProGAN
+from trainer import Trainer, Trainer_WGAN, Trainer_ProGAN, Trainer_UNCGAN, Trainer_UNCGAN_M
 from utils import prepare_device, initialize_weights
 
 
@@ -33,8 +34,29 @@ def main(config):
     print('data loader : ',data_loader)
     # valid_data_loader = data_loader.split_validation()
     # print('valid data loader : ',valid_data_loader)
+    
+    print('prepare gpu training')
+    device, device_ids = prepare_device(config['n_gpu'])
 
     # build model architecture, then print to console
+    if model_name in ['UNCGAN', 'UNCTransGAN']:
+        M = config['trainer']['M']
+        if M==0:
+            model_G = config.init_obj('arch_G', module_arch_UNCGAN)
+            model_D = config.init_obj('arch_D', module_arch_UNCGAN)
+        if M==1:
+            model_G = config.init_obj('arch_G', module_arch_UNCGAN)
+            model_D = config.init_obj('arch_D', module_arch_UNCGAN)
+
+            ### Import The previously trained Generator
+            model_G0 = config.init_obj('arch_G0', module_arch_UNCGAN)
+            checkpoint_G0 = torch.load(config['trainer']['checkpoint_G0'])
+            state_dict_G0 = checkpoint_G0['state_dict_G']
+            if config['n_gpu'] > 1:
+                model_G0 = torch.nn.DataParallel(model_G0,device_ids=device_ids)
+            model_G0.load_state_dict(state_dict_G0)
+            model_G0 = model_G0.to(device)
+
 
     if model_name in ['ProGAN']:
         model_G = config.init_obj('arch_G', module_arch_ProGAN)
@@ -50,8 +72,7 @@ def main(config):
     logger.info(model_D)
 
     # prepare for (multi-device) GPU training
-    print('prepare gpu training')
-    device, device_ids = prepare_device(config['n_gpu'])
+
     model_G = model_G.to(device)
     model_D = model_D.to(device)
     
@@ -84,10 +105,41 @@ def main(config):
     print('trainable_params D : ',trainable_params_D)
     optimizer_G = config.init_obj('optimizer_G', torch.optim, trainable_params_G)
     optimizer_D = config.init_obj('optimizer_D', torch.optim, trainable_params_D)
-    # lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
+    
+
+    # lr_scheduler_G = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer_G)
+    # lr_scheduler_D = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer_D)
+
     lr_scheduler = None
 
-    if model_name in ['DCGAN']:
+
+    if model_name in ['UNCGAN','UNCTransGAN']:
+        num_epochs = config['trainer']['epochs']
+        lr_scheduler_G = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer_G, num_epochs)
+        lr_scheduler_D = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer_D, num_epochs)
+        
+        criterion = None
+        if M==0:
+            trainer = Trainer_UNCGAN(model_G,model_D, criterion, metrics, optimizer_G,optimizer_D,
+                        config=config,
+                        device=device,
+                        data_loader=data_loader,
+                        valid_data_loader=None,
+                        lr_scheduler_G=lr_scheduler_G,
+                        lr_scheduler_D=lr_scheduler_D)
+        
+        if M==1:
+            trainer = Trainer_UNCGAN_M(model_G,model_G0, model_D, criterion, metrics, optimizer_G,optimizer_D,
+                        config=config,
+                        device=device,
+                        data_loader=data_loader,
+                        valid_data_loader=None,
+                        lr_scheduler_G=lr_scheduler_G,
+                        lr_scheduler_D=lr_scheduler_D)
+        trainer.train_UNCGAN()
+    
+
+    if model_name in ['DCGAN', "HDCGAN"]:
         criterion = torch.nn.BCELoss()
         trainer = Trainer(model_G,model_D, criterion, metrics, optimizer_G,optimizer_D,
                         config=config,
@@ -116,6 +168,9 @@ def main(config):
                       valid_data_loader=None,
                       lr_scheduler=lr_scheduler)
         trainer.train_ProGAN()
+
+
+    
     # trainer.train()
 
 

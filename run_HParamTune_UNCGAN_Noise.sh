@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # ------------------ Set hyperparameter tuning permutation options-----------------------------------
-OPTIMIZER_G=("0.0001")
-OPTIMIZER_D=("0.0001")
-NGF=("64")
-NDF=("64")
+OPTIMIZER_G=("0.002")
+OPTIMIZER_D=("0.002")
+NGF=("16")
+NDF=("16")
 G_KERNEL=("4")
 D_KERNEL=("4")
-CELL_TYPE=("MEL")
 #CELL_TYPE=("BCC" "SCC" "Benign" "Melanoma")
+CELL_TYPE=("MEL")
 NZ=("100") 
 # "200")
 # #OPTIMIZER_ARGS
@@ -59,30 +59,23 @@ do
                         do
                             for nz in ${NZ[@]}
                             do
-                                # jq --arg a "$OPT_G" '.optimizer_G.args.lr = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-                                # jq --arg a "$OPT_D" '.optimizer_D.args.lr = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-                                # jq --arg a "$ngf" '.arch_G.args.ngf = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-                                # jq --arg a "$ndf" '.arch_D.args.ndf = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-
-                                # jq --arg a "$g_kernel" '.arch_G.args.G_kernel_size = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-                                # jq --arg a "$d_kernel" '.arch_D.args.D_kernel_size = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
-
-                                # LOGGINGNAME="$( jq -r '[.optimizer_G.args.lr, .optimizer_D.args.lr, .arch_G.args.ngf, .arch_D.args.ndf, .arch_G.args.G_kernel_size, .arch_D.args.D_kernel_size ]|join("-")' './config/config_HParamTune_DCGAN.json' )"
-                                LOGGINGNAME=_"DCGAN"_"$TYPE"+"Glr"_"$OPT_G"+"Dlr"_"$OPT_D"+"Gngf"_"$ngf"+"Dndf"_"$ndf"+"NZ"_"$nz"
-                                jq --arg a "$LOGGINGNAME" '.run_name = $a' ./config/config_DCGAN_HParamTune.json | sponge ./config/config_DCGAN_HParamTune.json
-                                jq --arg a "$TYPE" '.data_loader.args.cell_type = $a' ./config/config_DCGAN_HParamTune.json | sponge ./config/config_DCGAN_HParamTune.json
+                                NAME="UNCGAN_Noise"_"$TYPE"
+                                LOGGINGNAME=_"UNCGAN_Noise"_"$TYPE"+"Glr"_"$OPT_G"+"Dlr"_"$OPT_D"
+                                jq --arg a "$NAME" '.name = $a' ./config/config_UNCGAN_Noise_HParamTune.json | sponge ./config/config_UNCGAN_Noise_HParamTune.json
+                                jq --arg a "$LOGGINGNAME" '.run_name = $a' ./config/config_UNCGAN_Noise_HParamTune.json | sponge ./config/config_UNCGAN_Noise_HParamTune.json
+                                # jq --arg a "$TYPE" '.data_loader.args.cell_type = $a' ./config/config_WGANGP_HParamTune.json | sponge ./config/config_WGANGP_HParamTune.json
                                 # jq '.' ./config/config_HParamTune_DCGAN.json
                                 # echo $LOGGINGNAME
                                 python3 train.py --device 0,1\
-                                -c ./config/config_DCGAN_HParamTune.json\
-                                --opt_G "$OPT_G"\
-                                --opt_D "$OPT_D"\
-                                --ngf "$ngf"\
-                                --ndf "$ndf"\
-                                --g_kernel "$g_kernel"\
-                                --d_kernel "$d_kernel"\
-                                --nz_model "$nz"\
-                                --nz_trainer "$nz"
+                                -c ./config/config_UNCGAN_Noise_HParamTune.json\
+                                # --opt_G "$OPT_G"\
+                                # --opt_D "$OPT_D"\
+                                # --ngf "$ngf"\
+                                # --ndf "$ndf"\
+                                # --g_kernel "$g_kernel"\
+                                # --d_kernel "$d_kernel"\
+                                # --nz_model "$nz"\
+                                # --nz_trainer "$nz"
                             done
                         done
                     done

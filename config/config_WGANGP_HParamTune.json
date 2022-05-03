@@ -1,6 +1,6 @@
 {
-  "name": "WGANGP_SCC",
-  "run_name": "_WGANGP_SCC+Glr_0.00005+Dlr_0.00005+Gngf_64+Dndf_64+NZ_100",
+  "name": "WGANGP_MEL",
+  "run_name": "_WGANGP_MEL+Glr_0.0001+Dlr_0.0001+Gngf_16+Dndf_16+NZ_100",
   "n_gpu": 2,
   "arch_G": {
     "type": "Generator_WGAN",
@@ -26,9 +26,9 @@
     "type": "KNUskinDataLoader_GAN",
     "args": {
       "data_dir": "data/",
-      "batch_size": 64,
-      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
-      "cell_type": "SCC",
+      "batch_size": 32,
+      "subject_map": "data/ISIC2017/ISIC_2017_subjectmap.csv",
+      "cell_type": "MEL",
       "shuffle": false,
       "validation_split": 0,
       "num_workers": 2

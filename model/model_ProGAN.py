@@ -71,11 +71,23 @@ class ConvBlock(nn.Module):
         self.leaky = nn.LeakyReLU(0.2)
         self.pn = PixelNorm()
 
+        self.selu = nn.SELU(inplace=True)
+        self.bn = nn.BatchNorm2d(out_channels)
+
     def forward(self, x):
-        x = self.leaky(self.conv1(x))
-        x = self.pn(x) if self.use_pn else x
-        x = self.leaky(self.conv2(x))
-        x = self.pn(x) if self.use_pn else x
+        if self.use_pn:
+            x = self.leaky(self.conv1(x))
+            x = self.pn(x)
+            x = self.leaky(self.conv2(x))
+            x = self.pn(x)
+        
+        else:
+            x = self.conv1(x)
+            x = self.pn(x)
+            x = self.selu(x)
+            x = self.conv2(x)
+            x = self.pn(x)
+            x = self.selu(x)
         return x
 
 
@@ -106,7 +118,7 @@ class Generator_ProGAN(nn.Module):
         ):  # -1 to prevent index error because of factors[i+1]
             conv_in_c = int(ngf * factors[i])
             conv_out_c = int(ngf * factors[i + 1])
-            self.prog_blocks.append(ConvBlock(conv_in_c, conv_out_c))
+            self.prog_blocks.append(ConvBlock(conv_in_c, conv_out_c, use_pixelnorm=True))
             self.rgb_layers.append(
                 WSConv2d(conv_out_c, img_channels, kernel_size=1, stride=1, padding=0)
             )
@@ -146,7 +158,7 @@ class Discriminator_ProGAN(nn.Module):
         for i in range(len(factors)-1, 0,-1):
             conv_in = int(ndf*factors[i])
             conv_out = int(ndf*factors[i-1])
-            self.prog_blocks.append(ConvBlock(conv_in,conv_out,use_pixelnorm=False))
+            self.prog_blocks.append(ConvBlock(conv_in,conv_out,use_pixelnorm=True))
             self.rgb_layers.append(WSConv2d(img_channels,conv_in,kernel_size=1,stride=1,padding=0))
         
         

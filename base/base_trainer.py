@@ -29,6 +29,13 @@ class BaseTrainer:
             self.img_sizes = cfg_trainer['img_sizes']
             self.batch_sizes = cfg_trainer['batch_sizes']
             self.use_autocast = cfg_trainer['use_autocast']
+        
+        if 'UNCGAN'==self.model_name or 'UNCTransGAN'==self.model_name:
+            
+            self.list_epochs = cfg_trainer['list_epochs']
+            self.list_lambda1 = cfg_trainer['list_lambda1']
+            self.list_lambda2 = cfg_trainer['list_lambda2']
+
 
         self.epochs = cfg_trainer['epochs']
         self.save_period = cfg_trainer['save_period']
@@ -72,6 +79,68 @@ class BaseTrainer:
 
 
 
+    ### Train UNCGAN
+    def train_UNCGAN(self):
+        """
+        Full training logic
+        """
+        not_improved_count = 0
+        # for num_epoches in self.progressive_epochs[self.step:]:
+        #     self.img_size = self.img_sizes[self.step]
+        #     self.batch_size = self.batch_sizes[self.step]
+        #     self.alpha = 1e-5
+        #     print('----------------------------------------------------------')
+        #     print('Current Image Size : {}x{}'.format(self.img_size,self.img_size))
+        #     print('Current Step       : {}'.format(self.step))
+        #     print('----------------------------------------------------------')
+        for self.num_epochs, self.lam1, self.lam2 in zip(self.list_epochs, self.list_lambda1, self.list_lambda2):
+            print('----------------------------------------------------------')
+            print('num_epochs           : {}'.format(self.num_epochs))
+            print('lam1                 : {}'.format(self.lam1))
+            print('lam2                 : {}'.format(self.lam2))
+            print('----------------------------------------------------------')
+            for epoch in range(self.start_epoch, self.num_epochs + 1):
+                result = self._train_epoch(epoch)
+
+                # save logged informations into log dict
+                log = {'epoch': epoch, 'lambda1': self.lam1, 'lambda2':self.lam2}
+                log.update(result)
+
+                # print logged informations to the screen
+                for key, value in log.items():
+                    self.logger.info('    {:15s}: {}'.format(str(key), value))
+
+                # evaluate model performance according to configured metric, save best checkpoint as model_best
+                best = False
+                if self.mnt_mode != 'off':
+                    try:
+                        # check whether model performance improved or not, according to specified metric(mnt_metric)
+                        improved = (self.mnt_mode == 'min' and log[self.mnt_metric] <= self.mnt_best) or \
+                                (self.mnt_mode == 'max' and log[self.mnt_metric] >= self.mnt_best)
+                    except KeyError:
+                        self.logger.warning("Warning: Metric '{}' is not found. "
+                                            "Model performance monitoring is disabled.".format(self.mnt_metric))
+                        self.mnt_mode = 'off'
+                        improved = False
+
+                    if improved:
+                        self.mnt_best = log[self.mnt_metric]
+                        not_improved_count = 0
+                        best = True
+                    else:
+                        not_improved_count += 1
+
+                    if not_improved_count > self.early_stop:
+                        self.logger.info("Validation performance didn\'t improve for {} epochs. "
+                                        "Training stops.".format(self.early_stop))
+                        break
+
+                if epoch % self.save_period == 0:
+                    self._save_checkpoint(epoch, save_best=best)
+
+
+
+    ### Train ProGAN
     def train_ProGAN(self):
         """
         Full training logic for ProGAN
@@ -87,7 +156,7 @@ class BaseTrainer:
             print('----------------------------------------------------------')
 
             for epoch in range(self.start_epoch, num_epoches + 1):
-                print('epoch : {}, alpha : {}'.format(epoch,round(self.alpha),3))
+                print('epoch : {}, alpha : {}'.format(epoch,round(self.alpha,5)))
                 result = self._train_epoch(epoch)
                 # save logged informations into log dict
                 log = {'epoch': epoch, 'img_size': self.img_size}
@@ -131,6 +200,8 @@ class BaseTrainer:
 
 
 
+
+    #### Train DCGAN, HDCGAN, WGAN, ...
 
     def train(self):
         """

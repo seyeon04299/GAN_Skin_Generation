@@ -100,9 +100,19 @@ ENV/
 # mypy
 .mypy_cache/
 
-# input data, saved log, checkpointsWW
+# input data, saved log, checkpoints
 data/KNU_DSLR/data/
-saved/
+data/ISIC2016/ISBI2016_ISIC_Part3B_Test_Data
+data/ISIC2016/ISBI2016_ISIC_Part3B_Training_Data
+data/ISIC2017/ISIC-2017_Test_v2_Data
+data/ISIC2017/ISIC-2017_Training_Data
+data/ISIC2017/ISIC-2017_Validation_Data
+data/ISIC2017/segmentation_groundtruth
+data/ISIC2018/
+data/PAD
+saved/models/
+saved/log/
+saved/log/BCC_Hparam/
 input/
 datasets/
 ~/root/

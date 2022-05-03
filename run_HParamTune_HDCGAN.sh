@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # ------------------ Set hyperparameter tuning permutation options-----------------------------------
-OPTIMIZER_G=("0.0002")
-OPTIMIZER_D=("0.0002")
+OPTIMIZER_G=("0.0001")
+OPTIMIZER_D=("0.0001")
 NGF=("128")
 NDF=("64")
 G_KERNEL=("4")
 D_KERNEL=("4")
-CELL_TYPE=("BCC")
+CELL_TYPE=("MEL")
 #CELL_TYPE=("BCC" "SCC" "Benign" "Melanoma")
 NZ=("100") 
 # "200")
@@ -68,7 +68,7 @@ do
                                 # jq --arg a "$d_kernel" '.arch_D.args.D_kernel_size = $a' ./config/config_HParamTune_DCGAN.json | sponge  ./config/config_HParamTune_DCGAN.json
 
                                 # LOGGINGNAME="$( jq -r '[.optimizer_G.args.lr, .optimizer_D.args.lr, .arch_G.args.ngf, .arch_D.args.ndf, .arch_G.args.G_kernel_size, .arch_D.args.D_kernel_size ]|join("-")' './config/config_HParamTune_DCGAN.json' )"
-                                LOGGINGNAME=_"$TYPE"+"Glr"_"$OPT_G"+"Dlr"_"$OPT_D"+"Gngf"_"$ngf"+"Dndf"_"$ndf"+"NZ"_"$nz"
+                                LOGGINGNAME=_"HDCGAN"_"$TYPE"+"Glr"_"$OPT_G"+"Dlr"_"$OPT_D"+"Gngf"_"$ngf"+"Dndf"_"$ndf"+"NZ"_"$nz"
                                 jq --arg a "$LOGGINGNAME" '.run_name = $a' ./config/config_HDCGAN_HParamTune.json | sponge ./config/config_HDCGAN_HParamTune.json
                                 jq --arg a "$TYPE" '.data_loader.args.cell_type = $a' ./config/config_HDCGAN_HParamTune.json | sponge ./config/config_HDCGAN_HParamTune.json
                                 # jq '.' ./config/config_HParamTune_DCGAN.json

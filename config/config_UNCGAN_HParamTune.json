@@ -1,0 +1,81 @@
+{
+  "name": "UNCGAN_MEL",
+  "run_name": "_UNCGAN_MEL+Glr_0.002+Dlr_0.002",
+  "n_gpu": 2,
+  "arch_G": {
+    "type": "CasUNet_3head_Segmented",
+    "args": {
+      "n_unet": 1,
+      "io_channels": 1
+    }
+  },
+  "arch_D": {
+    "type": "NLayerDiscriminator",
+    "args": {
+      "input_nc": 3,
+      "ndf": 64,
+      "n_layers": 4,
+      "norm_layer": "BatchNorm2d"
+    }
+  },
+  "hyperparameter_Tuning": true,
+  "data_loader": {
+    "type": "DataLoader_UNCGAN_segmentation",
+    "args": {
+      "data_dir": "data/",
+      "batch_size": 16,
+      "subject_map": "data/ISIC2017/ISIC_2017_subjectmap_segmentation.csv",
+      "cell_type1": "NEV",
+      "cell_type2": "MEL",
+      "shuffle": true,
+      "validation_split": 0,
+      "num_workers": 2
+    }
+  },
+  "optimizer_G": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.002,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    }
+  },
+  "optimizer_D": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.002,
+      "betas": [
+        0.9,
+        0.999
+      ]
+    }
+  },
+  "metrics": [],
+  "lr_scheduler": {
+    "type": "CosineAnnealingLR",
+    "args": {}
+  },
+  "trainer": {
+    "model_name": "UNCGAN",
+    "epochs": 90,
+    "save_dir": "saved/",
+    "save_period": 45,
+    "verbosity": 2,
+    "monitor": "off",
+    "early_stop": 10,
+    "tensorboard": true,
+    "nz": 100,
+    "list_epochs": [
+      90
+    ],
+    "list_lambda1": [
+      1
+    ],
+    "list_lambda2": [
+      0.001
+    ],
+    "M": 0
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "name": "BCC_Hparam_HDCGAN",
-  "run_name": "_BCC+Glr_0.0002+Dlr_0.0002+Gngf_128+Dndf_64+NZ_100",
+  "name": "HDCGAN_MEL",
+  "run_name": "_HDCGAN_MEL+Glr_0.0001+Dlr_0.0001+Gngf_128+Dndf_64+NZ_100",
   "n_gpu": 2,
   "arch_G": {
     "type": "Generator_HDCGAN",
@@ -23,10 +23,10 @@
     "args": {
       "data_dir": "data/",
       "batch_size": 32,
-      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
-      "cell_type": "BCC",
+      "subject_map": "data/ISIC2017/ISIC_2017_subjectmap.csv",
+      "cell_type": "MEL",
       "shuffle": false,
-      "validation_split": 0.1,
+      "validation_split": 0,
       "num_workers": 2
     }
   },
@@ -56,7 +56,7 @@
     }
   },
   "trainer": {
-    "model_name" : "HDCGAN",
+    "model_name": "HDCGAN",
     "epochs": 4000,
     "save_dir": "saved/",
     "save_period": 100,

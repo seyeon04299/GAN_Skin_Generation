@@ -3,7 +3,6 @@ from sklearn.metrics import roc_auc_score
 import torchmetrics.functional as FC
 
 
-
 def accuracy(output, target):
     with torch.no_grad():
         pred = torch.argmax(output, dim=1)

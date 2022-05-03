@@ -11,7 +11,7 @@ def get_data(base_dir, imageid_path_dict):
     
 
     labels_dict = {
-        'Malignant': 1,
+        'Malignant': 3, #Melanoma
         'Benign': 0
     }
     

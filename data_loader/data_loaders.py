@@ -9,6 +9,121 @@ import numpy as np
 
 
 
+
+class DataLoader_UNCGAN_Denoise(BaseDataLoader):
+    """
+    KNU data loading for GAN
+    """
+    def __init__(self, data_dir, batch_size, subject_map, cell_type1 = 'NEV', cell_type2='MEL', shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        input_size = 224
+        self.subject_map = pd.read_csv(subject_map)
+
+        if training==False:
+            mode = 'test'
+        if training==True:
+            mode = 'train'
+
+        train_transform = transforms.Compose([
+                                            transforms.Resize((input_size,input_size)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            # transforms.RandomVerticalFlip(),
+                                            # transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
+
+        train_transform_noise = transforms.Compose([
+                                            transforms.Resize((input_size,input_size)),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),
+                                            transforms.GaussianBlur(kernel_size=(3,3),sigma=(1,4)),
+                                            # transforms.GaussianBlur(kernel_size=(21,41),sigma=(3,6)),
+                                            transforms.RandomErasing(p=1,scale=(0.015,0.25),ratio=(0.2,2.3),value=0,inplace=False)
+                                            ])
+
+        #ToTensor() changes (nrow, ncol, nchannel) to (nchannel, nrow, ncol)
+
+        self.data_dir = data_dir
+        print(cell_type2)
+        # self.dataset = KNUskinDataset(self.subject_map, transform=train_transform)
+        self.dataset = Dataset_UNCGAN_withNoise(self.subject_map, transform=train_transform, transform_noise=train_transform_noise,mode=mode,cell_type=cell_type2)
+        self.subject_map = self.dataset.subject_map
+        super().__init__(self.dataset, batch_size, self.subject_map, shuffle, validation_split, num_workers)
+
+
+
+
+class DataLoader_UNCGAN_segmentation(BaseDataLoader):
+    """
+    KNU data loading for GAN
+    """
+    def __init__(self, data_dir, batch_size, subject_map, cell_type1 = 'NEV', cell_type2='MEL', shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        input_size = 224
+        self.subject_map = pd.read_csv(subject_map)
+
+        if training==False:
+            mode = 'test'
+        if training==True:
+            mode = 'train'
+
+        train_transform = transforms.Compose([
+                                            transforms.Resize((input_size,input_size)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            # transforms.RandomVerticalFlip(),
+                                            # transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
+
+        train_transform_segmented = transforms.Compose([
+                                            transforms.Resize((input_size,input_size)),
+                                            # transforms.CenterCrop(input_size),
+                                            transforms.ToTensor()])
+
+        #ToTensor() changes (nrow, ncol, nchannel) to (nchannel, nrow, ncol)
+
+        self.data_dir = data_dir
+        print(cell_type2)
+        # self.dataset = KNUskinDataset(self.subject_map, transform=train_transform)
+        self.dataset = Dataset_UNCGAN_withSegmentation(self.subject_map, transform=train_transform, transform_segmented=train_transform_segmented,mode=mode,cell_type=cell_type2)
+        self.subject_map = self.dataset.subject_map
+        super().__init__(self.dataset, batch_size, self.subject_map, shuffle, validation_split, num_workers)
+
+
+
+
+class DataLoader_UNCGAN(BaseDataLoader):
+    """
+    KNU data loading for GAN
+    """
+    def __init__(self, data_dir, batch_size, subject_map, cell_type1 = 'NEV', cell_type2='MEL', shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        input_size = 224
+        self.subject_map = pd.read_csv(subject_map)
+
+        if training==False:
+            mode = 'test'
+        if training==True:
+            mode = 'train'
+
+        train_transform = transforms.Compose([transforms.Resize((input_size,input_size)),
+                                            # transforms.Resize((input_size,input_size)),
+                                            # transforms.RandomHorizontalFlip(),
+                                            # transforms.RandomVerticalFlip(),
+                                            # transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
+
+        #ToTensor() changes (nrow, ncol, nchannel) to (nchannel, nrow, ncol)
+
+        self.data_dir = data_dir
+        
+        # self.dataset = KNUskinDataset(self.subject_map, transform=train_transform)
+        self.dataset = Dataset_UNCGAN(self.subject_map, transform=train_transform, mode=mode,cell_type1=cell_type1,cell_type2=cell_type2)
+        self.subject_map = self.dataset.subject_map
+        super().__init__(self.dataset, batch_size, self.subject_map, shuffle, validation_split, num_workers)
+
+
+
+
+
 ######################################################################
 ####### Data Loader For ProGAN
 ######################################################################

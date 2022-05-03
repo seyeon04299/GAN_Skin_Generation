@@ -1,6 +1,6 @@
 {
-  "name": "BCC_Hparam",
-  "run_name": "_Glr_0.0002+Dlr_0.001+Gngf_64+Dndf_64+NZ_100",
+  "name": "DCGAN_MEL_BCC",
+  "run_name": "_MEL+Glr_0.0001+Dlr_0.0001+Gngf_64+Dndf_64+NZ_100",
   "n_gpu": 2,
   "arch_G": {
     "type": "Generator_DCGAN",
@@ -22,11 +22,11 @@
     "type": "KNUskinDataLoader_GAN",
     "args": {
       "data_dir": "data/",
-      "batch_size": 64,
-      "subject_map": "data/KNU_DSLR/KNU_DSLR_subjectmap.csv",
-      "cell_type": "BCC",
+      "batch_size": 32,
+      "subject_map": "data/ISIC2017/ISIC_2017_subjectmap.csv",
+      "cell_type": "MEL",
       "shuffle": false,
-      "validation_split": 0.1,
+      "validation_split": 0,
       "num_workers": 2
     }
   },
@@ -56,7 +56,7 @@
     }
   },
   "trainer": {
-    "model_name" : "DCGAN",
+    "model_name": "DCGAN",
     "epochs": 4000,
     "save_dir": "saved/",
     "save_period": 100,
